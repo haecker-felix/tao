@@ -24,7 +24,6 @@ use crate::{
   error::{ExternalError, NotSupportedError, OsError as RootOsError},
   icon::Icon,
   monitor::MonitorHandle as RootMonitorHandle,
-  platform_impl::wayland::header::WlHeader,
   window::{
     CursorIcon, Fullscreen, ProgressBarState, ResizeDirection, Theme, UserAttentionType,
     WindowAttributes, WindowSizeConstraints, RGBA,
@@ -83,7 +82,6 @@ impl Window {
     let app = &event_loop_window_target.app;
     let window_requests_tx = event_loop_window_target.window_requests_tx.clone();
     let draw_tx = event_loop_window_target.draw_tx.clone();
-    let is_wayland = event_loop_window_target.is_wayland();
 
     let mut window_builder = gtk::ApplicationWindow::builder()
       .application(app)
@@ -93,10 +91,6 @@ impl Window {
     }
 
     let window = window_builder.build();
-
-    if is_wayland {
-      WlHeader::setup(&window, &attributes.title);
-    }
 
     let window_id = WindowId(window.id());
     event_loop_window_target
